@@ -3,18 +3,24 @@ import type { RegisterForm } from "../types/RegisterForm";
 import { Link, useNavigate } from "react-router";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { useRegister } from "../hooks/Useregister";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const RegisterPage = () => {
 
     const navigate = useNavigate();
+    const context = useContext(UserContext);
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>()
-    const { mutate, isPending, isError,error } = useRegister();
+    const { mutate, isPending, isError, error } = useRegister();
 
     const onSubmit = (data: RegisterForm) => {
         mutate(data, {
-            onSuccess: () => {
-                navigate("/teacher/requests")
+            onSuccess: (data) => {
+                localStorage.setItem("token", data.token);
+                context?.setUser(data.user);
+                navigate("/teacher/requests");
             }
+
         })
     }
 
