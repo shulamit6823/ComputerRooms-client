@@ -19,7 +19,7 @@ type ChangeStatusProps = {
 }
 
 export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusProps) => {
-    const { mutate: TakeRequest, isPending: taking } = UseTakeRequest();
+    const { mutate: TakeRequest, isPending: takingת } = UseTakeRequest();
     const { mutate: FinishRequest, isPending: finishing } = UseFinishRequest();
     const context = useContext(UserContext);
 

@@ -6,11 +6,6 @@ import ManagerPage from "../pages/ManagerPage";
 import ResponsibleRequests from "../pages/responsibleRequestsPage";
 import ChangePassword from "../pages/ChangePassword";
 import ResponsibleRequestDetails from "../pages/responsibleRequestDetailsPage";
-//import TeacherRequestsPage from "../pages/TeacherRequestsPage";
-//import TeacherRequestDetailsPage from "../pages/TeacherRequestDetailsPage";
-//import ManagerRequestsPage from "../pages/ManagerRequestsPage";
-//import ManagerRequestDetailsPage from "../pages/ManagerRequestDetailsPage";
-//import App from "../App";
 import { NewRequest } from "../components/newRequest";
 
 const routes = createBrowserRouter([

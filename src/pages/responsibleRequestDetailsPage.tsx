@@ -7,15 +7,11 @@ import MessagesInRequest from "../components/messagesInRequest";
 import { ChangeStatus } from "../components/ChangeStatus";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { UserContext } from "../context/UserContext";
-import type { RequestStatus } from "../types/RequestStatus";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import MailOutlineIcon from '@mui/icons-material/MailOutlined';
+import statusConfig from "../components/statusConfig";
 
-const statusConfig: Record<RequestStatus, { label: string; bg: string; fg: string }> = {
-    Pending: { label: 'ממתינה לטיפול', bg: '#fdecea', fg: '#c62828' },
-    InProgress: { label: 'בטיפול', bg: '#fff3e0', fg: '#e65100' },
-    Finished: { label: 'הסתיימה', bg: '#e8f5e9', fg: '#2e7d32' },
-};
+
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mt: 4, mb: 1.5, maxWidth: 560 }}>
         <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#8a94a6', whiteSpace: 'nowrap' }}>

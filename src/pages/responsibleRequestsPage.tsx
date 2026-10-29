@@ -7,23 +7,44 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
+import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import MeetingRoomOutlinedIcon from '@mui/icons-material/MeetingRoomOutlined';
+import ComputerOutlinedIcon from '@mui/icons-material/ComputerOutlined';
+import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
+import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
+import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
 import { Navigate, useNavigate } from "react-router";
 import type { RequestStatus } from "../types/RequestStatus";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import RequestFilters from "../components/filte_sort";
+import statusConfig from "../components/statusConfig";
 
-const statusConfig: Record<RequestStatus, { label: string; bg: string; fg: string }> = {
-    Pending: { label: 'ממתינה לטיפול', bg: '#fdecea', fg: '#c62828' },
-    InProgress: { label: 'בטיפול', bg: '#fff3e0', fg: '#e65100' },
-    Finished: { label: 'הסתיימה', bg: '#e8f5e9', fg: '#2e7d32' },
-};
+
 const statusMap: Record<string, string> = {
     "ממתינה לטיפול": "Pending",
     "בטיפול": "InProgress",
     "הסתיימה": "Finished"
 };
+
+const PageLoader = () => (
+    <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", py: 10 }}>
+        <CircularProgress size={44} thickness={4.5} sx={{ color: "#ba68c8" }} />
+    </Box>
+);
+
+// שורת מידע בכרטיס: אייקון + טקסט
+const InfoRow = ({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) => (
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, color: "#5f6b7a", fontSize: 13.5 }}>
+        <Box sx={{ display: "flex", color: "#9aa5b4", "& svg": { fontSize: 18 } }}>{icon}</Box>
+        <Typography component="span" sx={{ fontSize: 13.5, color: "inherit" }}>{children}</Typography>
+    </Box>
+);
 
 const ResponsibleRequests = () => {
     const navigate = useNavigate()
@@ -51,13 +72,19 @@ const ResponsibleRequests = () => {
 
 
     if (isLoading)
-        return <p>טוען...</p>
+        return <PageLoader />
     if (!user)
         return <Navigate to="/login" replace />
     if (isPending)
-        return <p>טוען...</p>
+        return <PageLoader />
     if (isError)
-        return <p>אירעה שגיאה בטעינת הפניות</p>
+        return (
+            <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 3, md: 5 } }}>
+                <Alert severity="error" sx={{ maxWidth: 520, mx: "auto", borderRadius: 2 }}>
+                    אירעה שגיאה בטעינת הפניות
+                </Alert>
+            </Box>
+        )
 
     const filteredData = data!.filter((f) => {
         if (chooseFilter === "סטטוס") {
@@ -81,158 +108,225 @@ const ResponsibleRequests = () => {
         return 0;
     });
     return (
-        <Box sx={{ flexGrow: 1, px: { xs: 2, md: 4 }, pt: { xs: 3, md: 5 }, pb: 4 }}>
-            <Box sx={{ mb: 4 }}>
-                {user?.role === "Responsible" ? (
-                    <><Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                        כל הפניות
-                    </Typography>
-                        <Typography sx={{ color: 'text.secondary', mt: 0.5 }}>
-                            צפייה וסינון של כל הפניות במערכת
-                        </Typography></>
-                ) : (
-
-                    <><Typography variant="h4" component="h1" sx={{ fontWeight: 700, color: 'text.primary' }}>
-                        הפניות שלי
-                    </Typography>
-                        <Typography sx={{ color: 'text.secondary', mt: 0.5 }}>
-                            צפייה בפניות שפתחת
-                        </Typography></>)
-                }
-
-                <Box sx={{ mt: 1.5, display: 'flex', gap: 0.75 }}>
-                    {['#4dd0e1', '#9fa8da', '#ba68c8'].map(c => (
-                        <Box key={c} sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c }} />
-                    ))}
-                </Box>
-
-            </Box>
-
-
-            {user?.role === "Teacher" && (
-                <Button
-                    variant="contained"
-                    onClick={() => navigate("/teacher/requests/create")}
-                    sx={{ mb: 3 }}
+        <Box
+            sx={{
+                flexGrow: 1,
+                px: { xs: 2, md: 4 },
+                pt: { xs: 3, md: 5 },
+                pb: 5,
+                background: "radial-gradient(circle at 100% 0%, #f3e5f5 0%, transparent 35%), radial-gradient(circle at 0% 100%, #e0f7fa 0%, transparent 35%), #fafbfd",
+            }}
+        >
+            <Box sx={{ maxWidth: 1200, mx: "auto" }}>
+                {/* כותרת הדף + כפתור הוספה */}
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        alignItems: "flex-end",
+                        justifyContent: "space-between",
+                        gap: 2,
+                        mb: 3,
+                    }}
                 >
-                    הוספת פנייה
-                </Button>
-            )}
+                    <Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                            <Typography variant="h4" component="h1" sx={{ fontWeight: 800, color: '#1f2340' }}>
+                                {user?.role === "Responsible" ? "כל הפניות" : "הפניות שלי"}
+                            </Typography>
+                            <Chip
+                                label={data!.length}
+                                size="small"
+                                sx={{ fontWeight: 700, bgcolor: "#f3e5f5", color: "#9b4dbf", height: 24 }}
+                            />
+                        </Box>
+                        <Typography sx={{ color: 'text.secondary', mt: 0.5 }}>
+                            {user?.role === "Responsible"
+                                ? "צפייה וסינון של כל הפניות במערכת"
+                                : "צפייה בפניות שפתחת ומעקב אחרי הטיפול בהן"}
+                        </Typography>
+                        <Box sx={{ mt: 1.5, display: 'flex', gap: 0.75 }}>
+                            {['#4dd0e1', '#9fa8da', '#ba68c8'].map(c => (
+                                <Box key={c} sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: c }} />
+                            ))}
+                        </Box>
+                    </Box>
 
-            <RequestFilters
-                requests={data ?? []}
-                onFilter={handleFilter}
-                onSort={handleSort}
-                disabled={data?.length === 0}
-            />
-
-            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 16 }}>
-
-                {sortedData.length === 0 ? (
-                    <Grid size={{ xs: 4, sm: 6, md: 8 }}>
-                        <Card
-                            variant="outlined"
+                    {user?.role === "Teacher" && (
+                        <Button
+                            variant="contained"
+                            size="large"
+                            startIcon={<AddRoundedIcon />}
+                            onClick={() => navigate("/teacher/requests/create")}
                             sx={{
-                                textAlign: "center",
-                                py: 3,
-                                px: 3,
                                 borderRadius: 3,
-                                border: "1px solid #d0d7e2",
-                                backgroundColor: "#f8f9fa",
+                                px: 3,
+                                py: 1.25,
+                                fontWeight: 700,
+                                fontSize: 16,
+                                boxShadow: "0 6px 18px rgba(186, 104, 200, 0.35)",
+                                background: "linear-gradient(to left, #4dd0e1, #ba68c8)",
+                                transition: "transform 0.15s, box-shadow 0.15s",
+                                "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: 1 },
+                                "&:hover": {
+                                    transform: "translateY(-2px)",
+                                    boxShadow: "0 10px 24px rgba(186, 104, 200, 0.45)",
+                                },
                             }}
                         >
-                            <CardContent>
-                                <Typography variant="h6" sx={{ mb: 1 }}>
-                                    אין כרגע פניות
-                                </Typography>
+                            פנייה חדשה
+                        </Button>
+                    )}
+                </Box>
 
-                                <Typography color="text.secondary">
-                                    כרגע אין פניות להצגה.
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ) :
-                    (
-                        sortedData.map(request => (
-                            <Grid key={request.id} size={{ xs: 2, sm: 4, md: 4 }}>
-                                <Card
-                                    variant="outlined"
-                                    sx={{
-                                        height: "100%",
-                                        borderRadius: 3,
-                                        border: "1px solid #d0d7e2",
-                                        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
-                                        transition: "0.2s",
-                                        backgroundColor: "#f5f5f5",
-                                        "&:hover": { boxShadow: "0 4px 14px rgba(0,0,0,0.1)" },
-                                    }}
-                                >
+                <RequestFilters
+                    onFilter={handleFilter}
+                    onSort={handleSort}
+                    disabled={data?.length === 0}
+                />
 
-                                    <Box
+                {sortedData.length === 0 ? (
+                    <Card
+                        variant="outlined"
+                        sx={{
+                            maxWidth: 520,
+                            mx: "auto",
+                            mt: 4,
+                            textAlign: "center",
+                            borderRadius: 4,
+                            border: "1px dashed #d0d7e2",
+                            bgcolor: "#ffffff",
+                        }}
+                    >
+                        <CardContent sx={{ py: 5 }}>
+                            <Box
+                                sx={{
+                                    width: 64,
+                                    height: 64,
+                                    mx: "auto",
+                                    mb: 2,
+                                    borderRadius: "50%",
+                                    bgcolor: "#f3e5f5",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                }}
+                            >
+                                <InboxOutlinedIcon sx={{ fontSize: 32, color: "#ba68c8" }} />
+                            </Box>
+                            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+                                אין כרגע פניות
+                            </Typography>
+                            <Typography color="text.secondary">
+                                כרגע אין פניות להצגה.
+                            </Typography>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                        {sortedData.map(request => {
+                            const st = statusConfig[request.status as RequestStatus];
+                            return (
+                                <Grid key={request.id} size={{ xs: 4, sm: 4, md: 4 }}>
+                                    <Card
+                                        variant="outlined"
                                         sx={{
-                                            height: 4,
-                                            background: "linear-gradient(to left, #4dd0e1, #ba68c8)",
+                                            height: "100%",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            borderRadius: 4,
+                                            border: "1px solid #e3e7ed",
+                                            bgcolor: "#ffffff",
+                                            boxShadow: "0 2px 10px rgba(31, 35, 64, 0.05)",
+                                            overflow: "hidden",
+                                            transition: "transform 0.2s, box-shadow 0.2s",
+                                            "&:hover": {
+                                                transform: "translateY(-3px)",
+                                                boxShadow: "0 10px 26px rgba(31, 35, 64, 0.10)",
+                                            },
                                         }}
-                                    />
-                                    <CardContent>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                            <Typography sx={{ color: 'text.secondary', fontSize: 10 }}>
-                                                #פנייה {request.id}
-                                            </Typography>
-                                            <Chip
-                                                size="small"
-                                                label={statusConfig[request.status as RequestStatus]?.label ?? request.status}
+                                    >
+                                        <Box sx={{ height: 4, bgcolor: st?.fg ?? "#cfd8dc", opacity: 0.85 }} />
+
+                                        <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                                                <Typography sx={{ color: '#9aa5b4', fontSize: 13, fontWeight: 700 }}>
+                                                    #{request.id}
+                                                </Typography>
+                                                <Chip
+                                                    size="small"
+                                                    label={st?.label ?? request.status}
+                                                    sx={{
+                                                        bgcolor: st?.bg ?? '#eceff1',
+                                                        color: st?.fg ?? '#546e7a',
+                                                        fontWeight: 700,
+                                                        fontSize: 11.5,
+                                                        borderRadius: 1.5,
+                                                        height: 24,
+                                                    }}
+                                                />
+                                            </Box>
+
+                                            <Typography
                                                 sx={{
-                                                    bgcolor: statusConfig[request.status as RequestStatus]?.bg ?? '#eceff1',
-                                                    color: statusConfig[request.status as RequestStatus]?.fg ?? '#546e7a',
-                                                    fontWeight: 600,
-                                                    fontSize: 11,
-                                                    borderRadius: 1.5,
-                                                    height: 22,
-                                                    border: '1px solid',
-                                                    borderColor: statusConfig[request.status as RequestStatus]?.fg ?? '#cfd8dc',
+                                                    color: '#1f2340',
+                                                    fontSize: '1.05rem',
+                                                    fontWeight: 700,
+                                                    lineHeight: 1.45,
+                                                    mb: 1.5,
+                                                    display: "-webkit-box",
+                                                    WebkitLineClamp: 3,
+                                                    WebkitBoxOrient: "vertical",
+                                                    overflow: "hidden",
                                                 }}
-                                            />
-                                        </Box>
-                                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-                                            {request.roomName}
-                                        </Typography>
-                                        <Typography variant="h6" component="div">
-                                            מחשב: {request.computerNumber}
-                                        </Typography>
-                                        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>סוג הפנייה: {request.requestType}</Typography>
-
-                                        <Typography sx={{
-                                            color: 'text.primary',
-                                            fontSize: '1.1rem',
-                                            fontWeight: 550,
-                                            mb: 1.5
-                                        }}>{request.description}</Typography>
-
-                                        <Typography variant="body2">
-                                            תאריך יעד: {new Date(request.dueDate).toLocaleDateString("he-IL")}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            התקבלה: {new Date(request.createdAt).toLocaleString("he-IL")}
-                                        </Typography>
-                                        {request.currentResponsibleName && (
-                                            <Typography variant="body2">
-                                                בטיפול האחראית: {request.currentResponsibleName}
+                                            >
+                                                {request.description}
                                             </Typography>
-                                        )}
-                                    </CardContent>
-                                    <CardActions>
-                                        <Button onClick={() =>
-                                            navigate(`${basePath}/${request.id}`)
-                                        } size="small" endIcon={<ChevronLeftIcon />} >לפרטים נוספים</Button>
-                                    </CardActions>
-                                </Card>
 
-                            </Grid>
-                        )))
-                }
-            </Grid>
+                                            <Chip
+                                                label={request.requestType}
+                                                size="small"
+                                                variant="outlined"
+                                                sx={{ mb: 2, fontWeight: 600, color: "#7b3f99", borderColor: "#e2c4f2", bgcolor: "#fbf6fe" }}
+                                            />
+
+                                            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                                                <InfoRow icon={<MeetingRoomOutlinedIcon />}>{request.roomName}</InfoRow>
+                                                <InfoRow icon={<ComputerOutlinedIcon />}>מחשב: {request.computerNumber || "—"}</InfoRow>
+                                                <InfoRow icon={<EventOutlinedIcon />}>
+                                                    תאריך יעד: {new Date(request.dueDate).toLocaleDateString("he-IL")}
+                                                </InfoRow>
+                                                <InfoRow icon={<ScheduleOutlinedIcon />}>
+                                                    התקבלה: {new Date(request.createdAt).toLocaleString("he-IL")}
+                                                </InfoRow>
+                                                {request.currentResponsibleName && (
+                                                    <InfoRow icon={<PersonOutlineIcon />}>
+                                                        בטיפול האחראית: {request.currentResponsibleName}
+                                                    </InfoRow>
+                                                )}
+                                            </Box>
+                                        </CardContent>
+
+                                        <Divider sx={{ borderColor: "#eef0f4" }} />
+                                        <CardActions sx={{ px: 2, py: 1 }}>
+                                            <Button
+                                                onClick={() =>
+                                                    navigate(`${basePath}/${request.id}`)
+                                                }
+                                                size="small"
+                                                endIcon={<ChevronLeftIcon />}
+                                                sx={{ fontWeight: 700, color: "#9b4dbf", borderRadius: 2, "&:hover": { bgcolor: "#fbf4fe" } }}
+                                            >
+                                                לפרטים נוספים
+                                            </Button>
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                )}
+            </Box>
         </Box>
     );
 }

@@ -1,50 +1,21 @@
-import { useState, type CSSProperties } from "react";
-import type { RequestCard } from "../types/RequestCard";
-import { GetRequestTypesApi } from "../api/getRequestTypesApi";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Alert, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
+import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
+import SwapVertRoundedIcon from '@mui/icons-material/SwapVertRounded';
+import { UseRequestTypes } from "../hooks/useRequestTYpes";
 
-const arrowIcon = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a94a6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`;
-
-const wrapStyle: CSSProperties = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    gap: 12,
-    padding: '12px 16px',
-    background: '#fafbfc',
-    border: '1px solid #e3e7ed',
-    borderRadius: 12,
-    width: 'fit-content',
-    maxWidth: '100%',
-    marginBottom: 24,
-    direction: 'rtl',
+const selectSx = {
+    minWidth: 170,
+    "& .MuiOutlinedInput-root": { borderRadius: 2.5, bgcolor: "#ffffff", fontSize: 14 },
 };
 
-const selectStyle: CSSProperties = {
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    minWidth: 150,
-    height: 38,
-    padding: '0 14px 0 36px',
-    fontSize: 14,
-    fontFamily: 'inherit',
-    color: '#3d4654',
-    backgroundColor: '#ffffff',
-    backgroundImage: arrowIcon,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'left 12px center',
-    border: '1px solid #d5dae2',
-    borderRadius: 10,
-    cursor: 'pointer',
-    outline: 'none',
+const subSelectSx = {
+    ...selectSx,
+    "& .MuiOutlinedInput-root": { borderRadius: 2.5, bgcolor: "#fbf6fe", fontSize: 14, color: "#7b3f99" },
+    "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e2c4f2" },
 };
 
-const subSelectStyle: CSSProperties = {
-    ...selectStyle,
-    backgroundColor: '#f6f0fb',
-    borderColor: '#e2c4f2',
-    color: '#7b3f99',
-};
+const iconSx = { fontSize: 18, color: "#9aa5b4", marginInlineEnd: 0.5 };
 
 const filterOptions = [
     "ללא סינון",
@@ -63,81 +34,112 @@ const statusOptions = [
     "הסתיימה"
 ];
 type RequestFiltersProps = {
-    requests: RequestCard[],
-    onFilter: (value: string, type: string) => void,
+    onFilter: (type: string, value: string) => void,
     onSort: (value: string) => void,
     disabled: boolean
 }
 const RequestFilters = ({ onFilter, onSort, disabled }: RequestFiltersProps) => {
     const [filterBy, setFilterBy] = useState("ללא סינון");
-    const { data, isError, isPending, error } = useQuery<string[]>({
-        queryKey: ["requestTypes"],
-        queryFn: GetRequestTypesApi
-    });
-    if(isError){
-        return <p>{error.message}</p>
+    const { data, isError, isPending, error } = UseRequestTypes()
+ 
+    if (isError) {
+        return <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error.message}</Alert>
     }
     if (isPending)
-        return <p>טוען...</p>
-    return (<div style={wrapStyle}>
-        <select
-            aria-label="סינון"
+        return <CircularProgress size={24} sx={{ color: "#ba68c8", mb: 3 }} />
+    return (<Paper
+        variant="outlined"
+        sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 1.5,
+            p: 1.5,
+            mb: 3,
+            borderRadius: 3,
+            borderColor: '#e3e7ed',
+            bgcolor: '#ffffff',
+            width: 'fit-content',
+            maxWidth: '100%',
+            boxShadow: '0 2px 10px rgba(31, 35, 64, 0.04)',
+        }}
+    >
+        <TextField
+            select
+            size="small"
+            label="סינון"
+            defaultValue={filterOptions[0]}
             disabled={disabled}
-            style={{ ...selectStyle, order: 1 }}
+            sx={{ ...selectSx, order: 1 }}
+            slotProps={{ input: { startAdornment: <FilterListRoundedIcon sx={iconSx} /> } }}
             onChange={(e) => {
                 setFilterBy(e.target.value)
-                if (e.target.value !== "סטטוס") {
-                    onFilter(e.target.value, "");
+                if (e.target.value === "סטטוס") {
+                    onFilter("סטטוס", statusOptions[0]);
+                } else if (e.target.value  === "סוג פנייה") {
+                    onFilter("סוג פנייה", data?.[0] ?? "");
+                } else {
+                    onFilter("", "");
                 }
             }
             }
         >{filterOptions.map((f) =>
-            <option key={f}>{f}</option>
+            <MenuItem key={f} value={f}>{f}</MenuItem>
         )}
-        </select>
+        </TextField>
 
-        <select
-            aria-label="מיון"
+        <TextField
+            select
+            size="small"
+            label="מיון"
+            defaultValue={sortOptions[0]}
             disabled={disabled}
-            style={{ ...selectStyle, order: 3 }}
+            sx={{ ...selectSx, order: 3 }}
+            slotProps={{ input: { startAdornment: <SwapVertRoundedIcon sx={iconSx} /> } }}
             onChange={(e) => {
                 onSort(e.target.value)
             }
             }
         >{sortOptions.map((f) =>
-            <option key={f}>{f}</option>
+            <MenuItem key={f} value={f}>{f}</MenuItem>
         )}
-        </select>
+        </TextField>
         {filterBy === "סטטוס" &&
-            <select
-                aria-label="בחירת סטטוס"
+            <TextField
+                select
+                size="small"
+                label="בחירת סטטוס"
+                defaultValue={statusOptions[0]}
                 disabled={disabled}
-                style={{ ...subSelectStyle, order: 2 }}
+                sx={{ ...subSelectSx, order: 2 }}
                 onChange={(e) => {
                     onFilter("סטטוס", e.target.value)
                 }
                 }
             >{statusOptions.map((f) =>
-                <option key={f}>{f}</option>
+                <MenuItem key={f} value={f}>{f}</MenuItem>
             )}
-            </select >
+            </TextField>
         }
         {filterBy === "סוג פנייה" && (
-            <select
-                aria-label="בחירת סוג פנייה"
+            <TextField
+                select
+                size="small"
+                label="בחירת סוג פנייה"
+                defaultValue={data?.[0] ?? ""}
                 disabled={disabled}
-                style={{ ...subSelectStyle, order: 2 }}
+                sx={{ ...subSelectSx, order: 2 }}
                 onChange={(e) => {
                     onFilter("סוג פנייה", e.target.value)
                 }}
             >
                 {data?.map((f) =>
-                    <option key={f}>{f}</option>
+                    <MenuItem key={f} value={f}>{f}</MenuItem>
                 )}
-            </select>)
+            </TextField>)
 
         }
-    </div>
+    </Paper>
     )
 }
 export default RequestFilters
