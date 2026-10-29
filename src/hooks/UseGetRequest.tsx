@@ -12,16 +12,10 @@ const UseGetRequest = () => {
         throw new Error("אירעה שגיאה בהבאת המשתמש במערכת")
     const{user}=context;
     
-    if (user?.role==="Teacher"){
-        return useQuery<RequestCard[]>({
-            queryKey:["teacher_request"],
-            queryFn:Request_teacherApi
-        })
-    }
-    else{
     return useQuery<RequestCard[]>({
-        queryKey: ["requests"],
-        queryFn: RequestApi
-    })}
+        queryKey: ["requests", user?.role],
+        queryFn: user?.role === "Teacher" ? Request_teacherApi : RequestApi,
+        enabled: !!user
+    })
 }
 export default UseGetRequest

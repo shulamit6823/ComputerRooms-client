@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "react-router"
-import {FinishRequestApi, oneRequestForResApi, TakeRequestApi} from "../api/RequestForResApi"
+import {ChangeRequestTypeApi, FinishRequestApi, oneRequestForResApi, TakeRequestApi} from "../api/RequestForResApi"
 import type { RequestDetails } from "../types/RequestDetails"
 //מביא פרטים מלאים של פנייה אחת - לדף אחראית
 export const UseOneRequestForRes = () => {
@@ -20,6 +20,9 @@ export const UseTakeRequest = () => {
             queryClient.invalidateQueries({
                 queryKey:["request", id]
             })
+            queryClient.invalidateQueries({
+                queryKey:["requests"]
+            })
         }
     })
 }
@@ -32,6 +35,25 @@ export const UseFinishRequest = () => {
         onSuccess:()=>{
             queryClient.invalidateQueries({
                 queryKey:["request", id]
+            })
+            queryClient.invalidateQueries({
+                queryKey:["requests"]
+            })
+        }
+    })
+}
+//לשנות סוג פנייה
+export const UseChangeRequestType = () => {
+    const queryClient = useQueryClient();
+    const {id} = useParams()
+    return useMutation({
+        mutationFn:(type: string)=> ChangeRequestTypeApi(id!, type),
+        onSuccess:()=>{
+            queryClient.invalidateQueries({
+                queryKey:["request", id]
+            })
+            queryClient.invalidateQueries({
+                queryKey:["requests"]
             })
         }
     })

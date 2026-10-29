@@ -26,10 +26,8 @@ export const Login = () => {
     } = useMutation({
         mutationFn: LoginUser,
         onSuccess: (data) => {//מכיל טוקן
-            console.log(data);
             if(data.token){
                 localStorage.setItem("token", data.token);}
-                console.log("TOKEN AFTER LOGIN:", localStorage.getItem("token"))
             if(!context)
                 throw new Error("UserContext must be used inside UserProvider");
             const {setUser}=context;
@@ -43,7 +41,6 @@ export const Login = () => {
             if(data.requiresPasswordChange)
             {
                 window.alert("עליך להחליף את הסיסמה לפני הכניסה למערכת")
-                console.log(data);
                 navigate("/change-password");
             }
             else if (data.user.role === "Manager")
@@ -56,7 +53,6 @@ export const Login = () => {
     });
 
     const onSubmit = (data: LoginForm) => {//מכיל את האובייקט USER
-        console.log(data);
         mutate(data);
     };
 
@@ -96,7 +92,7 @@ export const Login = () => {
                 helperText={errors.password?.message}
             />
 
-            <Button type="submit" variant="contained">
+            <Button type="submit" variant="contained" disabled={isPending}>
                 התחברות
             </Button>
 

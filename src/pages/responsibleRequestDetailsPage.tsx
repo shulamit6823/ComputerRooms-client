@@ -1,8 +1,7 @@
 import { Box, Button, Card, Chip, Divider, Typography } from "@mui/material"
 import { useNavigate, useParams } from "react-router"
-import { UseOneRequestForRes } from "../hooks/UseRequestForRes"
+import { UseChangeRequestType, UseOneRequestForRes } from "../hooks/UseRequestForRes"
 import { useContext, useEffect, useState } from "react";
-import { ChangeRequestTypeApi } from "../api/RequestForResApi";
 import { UseRequestTypes } from "../hooks/useRequestTYpes";
 import MessagesInRequest from "../components/messagesInRequest";
 import { ChangeStatus } from "../components/ChangeStatus";
@@ -36,6 +35,8 @@ const ResponsibleRequestDetails = () => {
         throw new Error("UserContext לא נמצא");
 
     const { user } = context
+    const isResponsible = user?.role === "Responsible";
+    const basePath = isResponsible ? "/responsible/requests" : "/teacher/requests";
 
 
     const [selectedType, setSelectedType] = useState("");
@@ -44,8 +45,7 @@ const ResponsibleRequestDetails = () => {
             setSelectedType(data.requestType)
     }, [data])
     const { data: requestTypes } = UseRequestTypes();
-
-    console.log("REQUEST TYPES:", requestTypes);
+    const { mutate: changeType, isPending: typeChanging } = UseChangeRequestType();
 
     if (isPending) {
         return <p>טוען...</p>
@@ -61,7 +61,7 @@ const ResponsibleRequestDetails = () => {
         <Box sx={{ flexGrow: 1, px: { xs: 2, md: 4 }, pt: { xs: 3, md: 5 }, pb: 4 }}>
             <Box sx={{ mb: 4 }}>
                 <Button
-                    onClick={() => navigate(`/responsible/requests`)}
+                    onClick={() => navigate(basePath)}
                     startIcon={<ArrowForwardIcon />}
                     sx={{
                         color: '#5f6b7a',
@@ -96,24 +96,30 @@ const ResponsibleRequestDetails = () => {
                     מחשב: {data?.computerNumber}
                 </Typography>
                 <Typography sx={{ color: 'text.secondary', mb: 1.5 }} >סוג הפנייה:
-                    <select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        style={{
-                            marginRight: "10px",
-                            padding: "8px 12px",
-                            borderRadius: "6px",
-                            border: "1px solid #ccc",
-                            backgroundColor: "#fff",
-                            fontSize: "16px",
-                            minWidth: "160px",
-                            cursor: "pointer",
-                            outline: "none"
-                        }}
-                    >
-                        {requestTypes?.map((t: string) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                    <Button onClick={() => ChangeRequestTypeApi(id!, selectedType)}>אישור שינוי</Button>
+                    {isResponsible ? (
+                        <>
+                            <select
+                                value={selectedType}
+                                onChange={(e) => setSelectedType(e.target.value)}
+                                style={{
+                                    marginRight: "10px",
+                                    padding: "8px 12px",
+                                    borderRadius: "6px",
+                                    border: "1px solid #ccc",
+                                    backgroundColor: "#fff",
+                                    fontSize: "16px",
+                                    minWidth: "160px",
+                                    cursor: "pointer",
+                                    outline: "none"
+                                }}
+                            >
+                                {requestTypes?.map((t: string) => <option key={t} value={t}>{t}</option>)}
+                            </select>
+                            <Button onClick={() => changeType(selectedType)} disabled={typeChanging}>אישור שינוי</Button>
+                        </>
+                    ) : (
+                        <> {data!.requestType}</>
+                    )}
                 </Typography>
 
                 <Typography sx={{
@@ -162,11 +168,14 @@ const ResponsibleRequestDetails = () => {
                     התקבלה: {new Date(data!.createdAt).toLocaleString("he-IL")}
                 </Typography>
 
-                <Typography variant="body2">
-                    בטיפול האחראית: {data!.currentResponsibleName}
-                    <br />
-                </Typography>
+                {data!.currentResponsibleName && (
+                    <Typography variant="body2">
+                        בטיפול האחראית: {data!.currentResponsibleName}
+                    </Typography>
+                )}
 
+                {isResponsible && (
+                <>
                 <SectionTitle>פרטי מורה</SectionTitle>
 
                 <Card
@@ -200,6 +209,8 @@ const ResponsibleRequestDetails = () => {
                         </Typography>
                     </Box>
                 </Card>
+                </>
+                )}
 
                 <SectionTitle>תיאור והודעות</SectionTitle>
 

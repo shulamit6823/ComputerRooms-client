@@ -9,6 +9,7 @@ type UserProviderProps = {
 
 const UserProvider = ({ children }: UserProviderProps) => {
     const [user, setUser] = useState<User|null>(null)
+    const [isLoading, setIsLoading] = useState(() => !!localStorage.getItem("token"))
     useEffect(()=>{
         const token=localStorage.getItem("token");
         if(!token)
@@ -17,17 +18,19 @@ const UserProvider = ({ children }: UserProviderProps) => {
         .then((user)=>{
             setUser(user);
         })
-        .catch((error)=>{
-            console.log("getCurrentUser ERROR:", error);
-            // localStorage.removeItem("token");
+        .catch(()=>{
+            localStorage.removeItem("token");
             setUser(null);
         }
         )
+        .finally(()=>{
+            setIsLoading(false);
+        })
     },[] )
-   
+
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, isLoading }}>
             {children}
         </UserContext.Provider>
     )

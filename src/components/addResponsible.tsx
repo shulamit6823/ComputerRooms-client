@@ -88,7 +88,7 @@ const AddResponsible = ({ onCancel }: AddResponsibleProps) => {
                             ביטול
                         </Button>
 
-                        <Button type="submit" variant="contained" endIcon={<SendIcon />}>
+                        <Button type="submit" variant="contained" endIcon={<SendIcon />} disabled={isPending}>
                             לשלוח
                         </Button>
                     </Stack>

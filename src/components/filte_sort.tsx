@@ -1,7 +1,7 @@
 import { useState, type CSSProperties } from "react";
 import type { RequestCard } from "../types/RequestCard";
 import { GetRequestTypesApi } from "../api/getRequestTypesApi";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 const arrowIcon = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a94a6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`;
 
@@ -65,22 +65,24 @@ const statusOptions = [
 type RequestFiltersProps = {
     requests: RequestCard[],
     onFilter: (value: string, type: string) => void,
-    onSort: (value: string) => void
+    onSort: (value: string) => void,
+    disabled: boolean
 }
-const RequestFilters = ({ onFilter, onSort }: RequestFiltersProps) => {
+const RequestFilters = ({ onFilter, onSort, disabled }: RequestFiltersProps) => {
     const [filterBy, setFilterBy] = useState("ללא סינון");
     const { data, isError, isPending, error } = useQuery<string[]>({
         queryKey: ["requestTypes"],
         queryFn: GetRequestTypesApi
     });
-    // if(isError){
-    //     return <p>{error}</p>
-    //}
+    if(isError){
+        return <p>{error.message}</p>
+    }
     if (isPending)
         return <p>טוען...</p>
     return (<div style={wrapStyle}>
         <select
             aria-label="סינון"
+            disabled={disabled}
             style={{ ...selectStyle, order: 1 }}
             onChange={(e) => {
                 setFilterBy(e.target.value)
@@ -96,6 +98,7 @@ const RequestFilters = ({ onFilter, onSort }: RequestFiltersProps) => {
 
         <select
             aria-label="מיון"
+            disabled={disabled}
             style={{ ...selectStyle, order: 3 }}
             onChange={(e) => {
                 onSort(e.target.value)
@@ -108,6 +111,7 @@ const RequestFilters = ({ onFilter, onSort }: RequestFiltersProps) => {
         {filterBy === "סטטוס" &&
             <select
                 aria-label="בחירת סטטוס"
+                disabled={disabled}
                 style={{ ...subSelectStyle, order: 2 }}
                 onChange={(e) => {
                     onFilter("סטטוס", e.target.value)
@@ -121,6 +125,7 @@ const RequestFilters = ({ onFilter, onSort }: RequestFiltersProps) => {
         {filterBy === "סוג פנייה" && (
             <select
                 aria-label="בחירת סוג פנייה"
+                disabled={disabled}
                 style={{ ...subSelectStyle, order: 2 }}
                 onChange={(e) => {
                     onFilter("סוג פנייה", e.target.value)

@@ -10,10 +10,7 @@ export const oneRequestForResApi = async (id: string):Promise<RequestDetails> =>
     });
     if (!response.ok)
         throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
-    const data = await response.json()
-    console.log(data);
-
-    return data;
+    return response.json();
 }
 //אחראית לוקחת פנייה
 export const TakeRequestApi = async (id: number) => {
@@ -26,8 +23,7 @@ export const TakeRequestApi = async (id: number) => {
     });
     if (!response.ok)
         throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
-    const data = await response.json()
-    console.log(data);
+    return response.json();
 }
 //אחראית סיימה פנייה
 export const FinishRequestApi = async (id: number) => {
@@ -40,8 +36,7 @@ export const FinishRequestApi = async (id: number) => {
     });
     if (!response.ok)
         throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
-    const data = await response.json()
-    console.log(data);
+    return response.json();
 }
 //אחראית משנה סוג הפניה
 //השתמשתי
@@ -59,6 +54,5 @@ export const ChangeRequestTypeApi = async (id: string, type: string) => {
     });
     if (!response.ok)
         throw new Error(`אירעה שגיאה בעדכון הסוג של פנייה ${id}`);
-    const data = await response.json()
-    console.log(data);
+    return response.json();
 }

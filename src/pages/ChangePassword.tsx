@@ -26,7 +26,6 @@ const ChangePassword = () => {
         },
             {
                 onSuccess: (data) => {
-                    console.log("change password response:", data);
                      localStorage.setItem("token", data.token)
                      navigate("/responsible/requests")
                 }

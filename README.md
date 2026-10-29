@@ -1,32 +1,40 @@
-# React + TypeScript + Vite
+# ComputerRooms – מערכת פניות לתמיכה בחדרי מחשבים
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+מערכת לניהול פניות תמיכה: מורה פותחת פנייה על תקלה בחדר מחשבים, ואחראית מטפלת בה עד לסיום.
 
-Currently, two official plugins are available:
+## קישורים
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **האתר:** https://computerrooms-client.onrender.com
+- **קוד הצד־לקוח (React):** https://github.com/shulamit6823/ComputerRooms-client
+- **קוד השרת (ASP.NET Core):** https://github.com/shulamit6823/ComputerRooms-server
 
-## React Compiler
+> השרת רץ בתוכנית החינמית של Render ו"נרדם" כשאין בו שימוש – הכניסה הראשונה עשויה להימשך עד דקה.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## פרטי התחברות למנהל
 
-## Expanding the Oxlint configuration
+| | |
+|---|---|
+| **מייל** | `admin@computerrooms.local` |
+| **סיסמה** | `87654321` |
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+המנהל יכול להוסיף אחראיות. מורה נרשמת בעצמה דרך דף ההרשמה.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## תפקידים
+
+- **מורה** – נרשמת למערכת, פותחת פניות, עוקבת אחריהן ומוסיפה הודעות.
+- **אחראית** – נוצרת על ידי המנהל, לוקחת פניות לטיפול, משנה סוג וסטטוס, כותבת הודעות למורה והערות פנימיות.
+- **מנהל** – מוסיף ומסיר אחראיות.
+
+## טכנולוגיות
+
+React 19, TypeScript, Vite, MUI, React Router, TanStack Query, React Hook Form.
+השרת: ASP.NET Core 6, Entity Framework Core, PostgreSQL, JWT.
+
+## הרצה מקומית
+
+```
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+בזמן פיתוח הבקשות ל־`/api` מועברות לשרת המקומי `https://localhost:7122` (מוגדר ב־`vite.config.ts`).

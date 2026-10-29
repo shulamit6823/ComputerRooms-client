@@ -6,7 +6,7 @@ import { useState } from "react";
 import AddResponsible from "../components/addResponsible";
 
 const ManagerPage = () => {
-    const { mutate } = Usedeleteresponsible();
+    const { mutate, isPending: deleting } = Usedeleteresponsible();
     const [ShowForm, setShowForm] = useState(false);
     const { data, isLoading, isError } = useQuery({
         queryKey: ["responsible"],
@@ -85,7 +85,7 @@ const ManagerPage = () => {
                             <Typography color="text.secondary">
                                 {responsible.email}
                             </Typography>
-                            <Button onClick={() => handleDelete(responsible.id)}>להסרה</Button>
+                            <Button onClick={() => handleDelete(responsible.id)} disabled={deleting}>להסרה</Button>
 
 
                         </CardContent>

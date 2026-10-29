@@ -6,7 +6,6 @@ export const GetRequestTypesApi = async () => {
                 Authorization: `Bearer ${token}`
             }
         })
-        console.log("TYPES RESPONSE:", response.status);
         if(!response.ok){
             throw new Error("אירעה שגיאה בהבאת סוגי הפניות")
         }

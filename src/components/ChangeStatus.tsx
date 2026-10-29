@@ -19,8 +19,8 @@ type ChangeStatusProps = {
 }
 
 export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusProps) => {
-    const { mutate: TakeRequest } = UseTakeRequest();
-    const { mutate: FinishRequest } = UseFinishRequest();
+    const { mutate: TakeRequest, isPending: taking } = UseTakeRequest();
+    const { mutate: FinishRequest, isPending: finishing } = UseFinishRequest();
     const context = useContext(UserContext);
 
     if (!context)
@@ -34,6 +34,7 @@ export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusPro
                 size="small"
                 startIcon={<AssignmentIndOutlinedIcon />}
                 onClick={() => TakeRequest()}
+                disabled={taking}
                 sx={{ ...buttonSx, color: '#5f6b7a', borderColor: '#d5dae2', '&:hover': { borderColor: '#9aa5b4', bgcolor: '#f5f7fa' } }}
             >
                 להעביר לטיפולי
@@ -51,6 +52,7 @@ export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusPro
                         disableElevation
                         startIcon={<CheckCircleOutlineIcon />}
                         onClick={() => FinishRequest()}
+                        disabled={finishing}
                         sx={{ ...buttonSx, bgcolor: '#2e7d32', '&:hover': { bgcolor: '#256b29' } }}
                     >
                         סיום פנייה

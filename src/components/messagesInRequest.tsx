@@ -20,7 +20,7 @@ const MessagesInRequest = ({ data }: Props) => {
     const [text, setText] = useState("");
     const [messageType, setMessageType] = useState<"Public" | "Internal">("Public")
     const { mutate: addPublicMessage, isError, isPending, error } = UseAddMessageTeacher();
-    const { mutate: addInternalMessage } = UseAddMessageRespon();
+    const { mutate: addInternalMessage, isPending: internalPending } = UseAddMessageRespon();
     const context = useContext(UserContext);
     if (!context)
         throw new Error("UserContext לא נמצא");
@@ -106,7 +106,7 @@ const MessagesInRequest = ({ data }: Props) => {
                     </RadioGroup>
                 )}
 
-                <Button disabled={!text.trim()} onClick={() =>
+                <Button disabled={!text.trim() || isPending || internalPending} onClick={() =>
                     messageType == "Public" ? addPublicMessage(text, {
                         onSuccess: () => {
                             setShowMessage(false)
