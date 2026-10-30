@@ -1,5 +1,4 @@
-
-
+import { getErrorMessage } from "./getErrorMessage";
 
 const deleteResponsibleApi= async(id:number)=>{
     const token=localStorage.getItem("token");
@@ -11,6 +10,6 @@ const deleteResponsibleApi= async(id:number)=>{
         }
     })
     if(!response.ok)
-        throw new Error("Failed to delete responsible");
+        throw new Error(await getErrorMessage(response, "אירעה שגיאה בהסרת האחראית"));
 }
 export default deleteResponsibleApi

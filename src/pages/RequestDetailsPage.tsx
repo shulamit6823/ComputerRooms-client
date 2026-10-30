@@ -1,15 +1,17 @@
-import { Box, Button, Card, Chip, Divider, Typography } from "@mui/material"
+import { Alert, Box, Button, Card, Chip, CircularProgress, Divider, MenuItem, TextField, Typography } from "@mui/material"
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 import { useNavigate, useParams } from "react-router"
-import { UseChangeRequestType, UseOneRequestForRes } from "../hooks/UseRequestForRes"
+import { UseChangeRequestType, UseOneRequestForRes } from "../hooks/UseRequestDetails"
 import { useContext, useEffect, useState } from "react";
-import { UseRequestTypes } from "../hooks/useRequestTYpes";
-import MessagesInRequest from "../components/messagesInRequest";
+import { UseRequestTypes } from "../hooks/UseRequestTypes";
+import MessagesInRequest from "../components/MessagesInRequest";
 import { ChangeStatus } from "../components/ChangeStatus";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { UserContext } from "../context/UserContext";
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import MailOutlineIcon from '@mui/icons-material/MailOutlined';
 import statusConfig from "../components/statusConfig";
+
 
 
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
@@ -22,7 +24,7 @@ const SectionTitle = ({ children }: { children: React.ReactNode }) => (
 );
 
 
-const ResponsibleRequestDetails = () => {
+const RequestDetailsPage = () => {
     const { id } = useParams();
     const { data, isError, error, isPending } = UseOneRequestForRes();
     const navigate = useNavigate()
@@ -40,15 +42,24 @@ const ResponsibleRequestDetails = () => {
         if (data)
             setSelectedType(data.requestType)
     }, [data])
-    const { data: requestTypes } = UseRequestTypes();
-    const { mutate: changeType, isPending: typeChanging } = UseChangeRequestType();
+    const { data: requestTypes,isError:isErrorRequestType,error:errorRequestType } = UseRequestTypes();
+    const { mutate: changeType, isPending: typeChanging,isError:isErrorChangeRequestType,error:errorChangeRequestType } = UseChangeRequestType();
 
     if (isPending) {
-        return <p>טוען...</p>
+        return (
+            <Box sx={{ flexGrow: 1, display: "flex", alignItems: "center", justifyContent: "center", py: 10 }}>
+                <CircularProgress size={44} thickness={4.5} />
+            </Box>
+        )
     }
-    if (isError) {
-        return <p>{error.message}</p>
+    if (isError ) {
+        return (
+            <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 3, md: 5 } }}>
+                <Alert severity="error" sx={{ maxWidth: 520, mx: "auto" }}>{error.message}</Alert>
+            </Box>
+        )
     }
+
 
 
     const s = statusConfig[data!.status];
@@ -91,32 +102,52 @@ const ResponsibleRequestDetails = () => {
                 <Typography variant="h6" component="div">
                     מחשב: {data?.computerNumber}
                 </Typography>
-                <Typography sx={{ color: 'text.secondary', mb: 1.5 }} >סוג הפנייה:
-                    {isResponsible ? (
-                        <>
-                            <select
+                {isResponsible ? (
+                    <Box sx={{ mb: 2, mt: 1 }}>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 1.5 }}>
+                            <TextField
+                                select
+                                size="small"
+                                label="סוג הפנייה"
                                 value={selectedType}
                                 onChange={(e) => setSelectedType(e.target.value)}
-                                style={{
-                                    marginRight: "10px",
-                                    padding: "8px 12px",
-                                    borderRadius: "6px",
-                                    border: "1px solid #ccc",
-                                    backgroundColor: "#fff",
-                                    fontSize: "16px",
-                                    minWidth: "160px",
-                                    cursor: "pointer",
-                                    outline: "none"
+                                sx={{
+                                    minWidth: 200,
+                                    "& .MuiOutlinedInput-root": { borderRadius: 2.5, bgcolor: "#ffffff" },
                                 }}
                             >
-                                {requestTypes?.map((t: string) => <option key={t} value={t}>{t}</option>)}
-                            </select>
-                            <Button onClick={() => changeType(selectedType)} disabled={typeChanging}>אישור שינוי</Button>
-                        </>
-                    ) : (
-                        <> {data!.requestType}</>
-                    )}
-                </Typography>
+                                {requestTypes?.map((t: string) => <MenuItem key={t} value={t}>{t}</MenuItem>)}
+                            </TextField>
+                            <Button
+                                onClick={() => changeType(selectedType)}
+                                disabled={typeChanging}
+                                variant="outlined"
+                                startIcon={typeChanging ? <CircularProgress size={16} /> : <CheckRoundedIcon />}
+                                sx={{
+                                    borderRadius: 2.5,
+                                    fontWeight: 700,
+                                    color: "#9b4dbf",
+                                    borderColor: "#e2c4f2",
+                                    "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: 0.75 },
+                                    "&:hover": { borderColor: "#d77cf5", bgcolor: "#fbf4fe" },
+                                }}
+                            >
+                                אישור שינוי
+                            </Button>
+                        </Box>
+                        {isErrorChangeRequestType && <Alert severity="error" sx={{ mt: 1.5, maxWidth: 520 }}>{errorChangeRequestType.message}</Alert>}
+                    </Box>
+                ) : (
+                    <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+                        סוג הפנייה:{" "}
+                        <Chip
+                            label={data!.requestType}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontWeight: 600, color: "#7b3f99", borderColor: "#e2c4f2", bgcolor: "#fbf6fe" }}
+                        />
+                    </Typography>
+                )}
 
                 <Typography sx={{
                     color: 'text.primary',
@@ -213,7 +244,8 @@ const ResponsibleRequestDetails = () => {
                 <MessagesInRequest data={data}></MessagesInRequest>
 
             </Box>
+             {isErrorRequestType && <Typography color="error">{errorRequestType.message}</Typography >}
         </Box >
     )
 }
-export default ResponsibleRequestDetails
+export default RequestDetailsPage

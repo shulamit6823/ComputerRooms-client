@@ -1,10 +1,10 @@
-import { Alert, Box, Button, Card, CardContent, Stack, TextField, Typography } from "@mui/material"
-import { UseNewRequest } from "../hooks/UsenewRequest"
+import { Alert, Box, Button, Card, CardContent, CircularProgress, Stack, TextField, Typography } from "@mui/material"
+import { UseNewRequest } from "../hooks/UseNewRequest"
 import { useForm } from "react-hook-form"
 import MenuItem from "@mui/material/MenuItem";
 import type { CreateRequest } from "../types/CreateRequest";
 import { useNavigate } from "react-router";
-import { UseRequestTypes } from "../hooks/useRequestTYpes";
+import { UseRequestTypes } from "../hooks/UseRequestTypes";
 import { useState } from "react";
 
 export const NewRequest = () => {
@@ -92,7 +92,12 @@ export const NewRequest = () => {
                                     })}
                                     error={typesError || !!errors.requestType}
                                     helperText={
-                                        typesLoading ? "טוען סוגי פניות..."
+                                        typesLoading ? (
+                                            <Box component="span" sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
+                                                <CircularProgress size={12} thickness={6} />
+                                                טוען סוגי פניות
+                                            </Box>
+                                        )
                                             : typesError ? "לא הצלחנו לטעון את סוגי הפניות"
                                                 : errors.requestType?.message
                                     }
@@ -163,10 +168,12 @@ export const NewRequest = () => {
                                             px: 4,
                                             boxShadow: "none",
                                             background: "linear-gradient(to left, #4dd0e1, #ba68c8)",
+                                            minWidth: 140,
                                             "&:hover": { boxShadow: "0 4px 14px rgba(186,104,200,0.35)" },
+                                            "&.Mui-disabled": { color: "#fff", opacity: 0.75 },
                                         }}
                                     >
-                                        {isPending ? "שולח..." : "שליחת פנייה"}
+                                        {isPending ? <CircularProgress size={22} thickness={5} sx={{ color: "#fff" }} /> : "שליחת פנייה"}
                                     </Button>
                                 </Stack>
                             </Stack>

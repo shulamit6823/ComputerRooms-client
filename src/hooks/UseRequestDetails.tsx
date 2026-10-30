@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useParams } from "react-router"
-import {ChangeRequestTypeApi, FinishRequestApi, oneRequestForResApi, TakeRequestApi} from "../api/RequestForResApi"
+import {ChangeRequestTypeApi, FinishRequestApi, oneRequestForResApi, TakeRequestApi} from "../api/requestDetailsApi"
 import type { RequestDetails } from "../types/RequestDetails"
 //מביא פרטים מלאים של פנייה אחת - לדף אחראית
 export const UseOneRequestForRes = () => {

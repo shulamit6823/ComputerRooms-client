@@ -1,4 +1,5 @@
-import type { ChangePasswordForm } from "../types/changePassword";
+import type { ChangePasswordForm } from "../types/ChangePasswordForm";
+import { getErrorMessage } from "./getErrorMessage";
 
 const ChangePasswordApi=async(data:ChangePasswordForm)=>{
     const response= await fetch("/api/auth/change-password",{
@@ -9,13 +10,9 @@ const ChangePasswordApi=async(data:ChangePasswordForm)=>{
         body:JSON.stringify(data)
 
     })
-   
-    //     throw new Error("אירעה שגיאה בהחלפת הסיסמה")
-   
-    if (!response.ok) {
-     const error = await response.json();
-     throw new Error(error.title);
-    }
+
+    if (!response.ok)
+        throw new Error(await getErrorMessage(response, "אירעה שגיאה בהחלפת הסיסמה"));
     return response.json();
 
 

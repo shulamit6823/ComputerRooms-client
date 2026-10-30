@@ -1,3 +1,4 @@
+import { getErrorMessage } from "./getErrorMessage";
 
 const Request_teacherApi=async ()=>{
     const token=localStorage.getItem("token")
@@ -8,7 +9,7 @@ const Request_teacherApi=async ()=>{
     });
 
     if(!response.ok) {
-        throw new Error(`אירעה שגיאה בטעינת הפניות של מורה`);
+        throw new Error(await getErrorMessage(response, "אירעה שגיאה בטעינת הפניות"));
     }
     return await response.json();
   

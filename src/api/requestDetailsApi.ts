@@ -1,4 +1,5 @@
 import type { RequestDetails } from "../types/RequestDetails";
+import { getErrorMessage } from "./getErrorMessage";
 
 //כל פרטי הפנייה
 export const oneRequestForResApi = async (id: string):Promise<RequestDetails> => {
@@ -9,7 +10,7 @@ export const oneRequestForResApi = async (id: string):Promise<RequestDetails> =>
         }
     });
     if (!response.ok)
-        throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
+        throw new Error(await getErrorMessage(response, `אירעה שגיאה בהבאת הפרטים של פנייה ${id}`));
     return response.json();
 }
 //אחראית לוקחת פנייה
@@ -22,7 +23,7 @@ export const TakeRequestApi = async (id: number) => {
         }
     });
     if (!response.ok)
-        throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
+        throw new Error(await getErrorMessage(response, `אירעה שגיאה בלקיחת פנייה ${id} לטיפול`));
     return response.json();
 }
 //אחראית סיימה פנייה
@@ -35,7 +36,7 @@ export const FinishRequestApi = async (id: number) => {
         }
     });
     if (!response.ok)
-        throw new Error(`אירעה שגיאה בהבאת הפרטים של פנייה ${id}`);
+        throw new Error(await getErrorMessage(response, `אירעה שגיאה בסיום פנייה ${id}`));
     return response.json();
 }
 //אחראית משנה סוג הפניה
@@ -53,6 +54,6 @@ export const ChangeRequestTypeApi = async (id: string, type: string) => {
         })
     });
     if (!response.ok)
-        throw new Error(`אירעה שגיאה בעדכון הסוג של פנייה ${id}`);
+        throw new Error(await getErrorMessage(response, `אירעה שגיאה בעדכון הסוג של פנייה ${id}`));
     return response.json();
 }

@@ -18,11 +18,11 @@ import EventOutlinedIcon from '@mui/icons-material/EventOutlined';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutlined';
 import InboxOutlinedIcon from '@mui/icons-material/InboxOutlined';
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import type { RequestStatus } from "../types/RequestStatus";
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
-import RequestFilters from "../components/filte_sort";
+import RequestFilters from "../components/RequestFilters";
 import statusConfig from "../components/statusConfig";
 
 
@@ -46,7 +46,7 @@ const InfoRow = ({ icon, children }: { icon: React.ReactNode; children: React.Re
     </Box>
 );
 
-const ResponsibleRequests = () => {
+const RequestsPage = () => {
     const navigate = useNavigate()
     const { data, isPending, isError } = UseGetRequest()
     const [chooseFilter, setChooseFilter] = useState("");
@@ -58,7 +58,7 @@ const ResponsibleRequests = () => {
         throw new Error("UserContext לא נמצא");
 
 
-    const { user, isLoading } = context
+    const { user } = context
     const basePath = user?.role === "Teacher" ? "/teacher/requests" : "/responsible/requests";
 
     const handleFilter = (type: string, value: string) => {
@@ -71,16 +71,12 @@ const ResponsibleRequests = () => {
     };
 
 
-    if (isLoading)
-        return <PageLoader />
-    if (!user)
-        return <Navigate to="/login" replace />
     if (isPending)
         return <PageLoader />
     if (isError)
         return (
             <Box sx={{ px: { xs: 2, md: 4 }, pt: { xs: 3, md: 5 } }}>
-                <Alert severity="error" sx={{ maxWidth: 520, mx: "auto", borderRadius: 2 }}>
+                <Alert severity="error" sx={{ maxWidth: 520, mx: "auto" }}>
                     אירעה שגיאה בטעינת הפניות
                 </Alert>
             </Box>
@@ -331,4 +327,4 @@ const ResponsibleRequests = () => {
     );
 }
 
-export default ResponsibleRequests
+export default RequestsPage

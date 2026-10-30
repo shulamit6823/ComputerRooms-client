@@ -1,3 +1,5 @@
+import { getErrorMessage } from "./getErrorMessage";
+
 export const GetRequestTypesApi = async () => {
     const token = localStorage.getItem("token")
     const response = await fetch("/api/requests/types",
@@ -7,7 +9,7 @@ export const GetRequestTypesApi = async () => {
             }
         })
         if(!response.ok){
-            throw new Error("אירעה שגיאה בהבאת סוגי הפניות")
+            throw new Error(await getErrorMessage(response, "אירעה שגיאה בהבאת סוגי הפניות"))
         }
         return response.json();
 }

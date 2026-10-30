@@ -1,8 +1,8 @@
 import type { RequestStatus } from "../types/RequestStatus";
-import { UseFinishRequest, UseTakeRequest } from "../hooks/UseRequestForRes";
+import { UseFinishRequest, UseTakeRequest } from "../hooks/UseRequestDetails";
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
-import { Button} from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutlined';
 
@@ -19,8 +19,8 @@ type ChangeStatusProps = {
 }
 
 export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusProps) => {
-    const { mutate: TakeRequest, isPending: taking,isError,error } = UseTakeRequest();
-    const { mutate: FinishRequest, isPending: finishing } = UseFinishRequest();
+    const { mutate: TakeRequest, isPending: taking, isError, error } = UseTakeRequest();
+    const { mutate: FinishRequest, isPending: finishing, isError: finishFailed, error: finishError } = UseFinishRequest();
     const context = useContext(UserContext);
 
     if (!context)
@@ -64,7 +64,12 @@ export const ChangeStatus = ({ status, currentResponsibleName }: ChangeStatusPro
         return null;
     }
 
-    
 
-    return Buttons()
+
+    return <>
+        {finishFailed && <Typography color="error">{finishError.message}</Typography>}
+
+        {isError && <Typography color="error">{error.message}</Typography >}
+        {Buttons()}
+    </>
 }

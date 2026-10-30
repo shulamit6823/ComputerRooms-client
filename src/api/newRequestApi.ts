@@ -1,4 +1,5 @@
 import type { CreateRequest } from "../types/CreateRequest";
+import { getErrorMessage } from "./getErrorMessage";
 
 export const newRequestApi = async (requestData: CreateRequest) => {
     const token = localStorage.getItem("token");
@@ -12,15 +13,8 @@ export const newRequestApi = async (requestData: CreateRequest) => {
         body: JSON.stringify(requestData)
     });
 
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const firstValidationError = errorData?.errors
-            ? Object.values(errorData.errors).flat()[0]
-            : null;
-        throw new Error(
-            (firstValidationError as string) || errorData?.title || "אירעה שגיאה ביצירת הפנייה"
-        );
-    }
+    if (!response.ok)
+        throw new Error(await getErrorMessage(response, "אירעה שגיאה ביצירת הפנייה"));
 
     return response.json();
 }

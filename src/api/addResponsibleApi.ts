@@ -1,4 +1,5 @@
-import type { NewResponsible } from "../types/addRegister";
+import type { NewResponsible } from "../types/NewResponsible";
+import { getErrorMessage } from "./getErrorMessage";
 
 const AddResponsible=async (data:NewResponsible)=>{
     const token=localStorage.getItem("token")
@@ -14,7 +15,8 @@ const AddResponsible=async (data:NewResponsible)=>{
         throw new Error("כתובת המייל כבר קיימת במערכת")
     }
     else if(!response.ok){
-        throw new Error("אירעה שגיאה בהוספת אחראית")
+       throw new Error(await getErrorMessage(response, "אירעה שגיאה בהוספת אחראית"))
+
     }
     else{
         return response;

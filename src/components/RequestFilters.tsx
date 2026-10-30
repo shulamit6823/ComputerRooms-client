@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Alert, CircularProgress, MenuItem, Paper, TextField } from "@mui/material";
 import FilterListRoundedIcon from '@mui/icons-material/FilterListRounded';
 import SwapVertRoundedIcon from '@mui/icons-material/SwapVertRounded';
-import { UseRequestTypes } from "../hooks/useRequestTYpes";
+import { UseRequestTypes } from "../hooks/UseRequestTypes";
 
 const selectSx = {
     minWidth: 170,
@@ -43,7 +43,7 @@ const RequestFilters = ({ onFilter, onSort, disabled }: RequestFiltersProps) => 
     const { data, isError, isPending, error } = UseRequestTypes()
  
     if (isError) {
-        return <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>{error.message}</Alert>
+        return <Alert severity="error" sx={{ mb: 3 }}>{error.message}</Alert>
     }
     if (isPending)
         return <CircularProgress size={24} sx={{ color: "#ba68c8", mb: 3 }} />

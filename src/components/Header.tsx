@@ -1,7 +1,7 @@
 import { Box, Button } from "@mui/material";
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
-import UseLogout from "../hooks/UseLogOut";
-import Logo from "./logo";
+import UseLogout from "../hooks/UseLogout";
+import Logo from "./Logo";
 
 const Header = () => {
     const logout = UseLogout();

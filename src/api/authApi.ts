@@ -1,5 +1,6 @@
 import type { LoginForm } from "../types/LoginForm";
 import type { RegisterForm } from "../types/RegisterForm"
+import { getErrorMessage } from "./getErrorMessage";
 
 
 export const registerUser = async (data: RegisterForm) => {
@@ -13,15 +14,8 @@ export const registerUser = async (data: RegisterForm) => {
 
      if(response.status === 409)
             throw new Error("המייל כבר רשום במערכת. אםהאתאחראיית, הירשמיכמורה עם מייל אחר.")
-    if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        const firstValidationError = errorData?.errors
-            ? Object.values(errorData.errors).flat()[0]
-            : null;
-        throw new Error(
-            (firstValidationError as string) || errorData?.title || "הרשמה נכשלה"
-        );
-    }
+    if (!response.ok)
+        throw new Error(await getErrorMessage(response, "הרשמה נכשלה"));
 
     return response.json();
 
@@ -37,10 +31,8 @@ export const LoginUser = async (data: LoginForm) => {
             body: JSON.stringify(data)
         }
     );
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.title || "ההתחברות נכשלה")
-    }
+    if (!response.ok)
+        throw new Error(await getErrorMessage(response, "ההתחברות נכשלה"));
     return response.json();
 }
 
@@ -53,6 +45,6 @@ export const getCurrentUser = async () => {
     })
 
     if (!response.ok)
-        throw new Error("לא ניתן לקבל את פרטי המשתמש")
+        throw new Error(await getErrorMessage(response, "לא ניתן לקבל את פרטי המשתמש"));
     return response.json();
 }

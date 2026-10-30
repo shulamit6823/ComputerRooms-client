@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { AddMessageResponApi, AddMessageTeacherApi } from "../api/Addmessages"
+import { AddMessageResponApi, AddMessageTeacherApi } from "../api/messagesApi"
 import { useParams } from "react-router"
 
 

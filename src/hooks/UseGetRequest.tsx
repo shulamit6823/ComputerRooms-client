@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
-import RequestApi from "../api/requestsApi"
+import RequestApi from "../api/allRequestsApi"
 import type { RequestCard } from "../types/RequestCard"
     import { UserContext } from "../context/UserContext";
 import { useContext } from "react";
-import Request_teacherApi from "../api/RequestForTeacherApi";
+import Request_teacherApi from "../api/teacherRequestsApi";
 
 
 const UseGetRequest = () => {

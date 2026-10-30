@@ -1,4 +1,6 @@
-import { Box, Button, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material"
+import { Alert, Box, Button, CircularProgress, FormControlLabel, Paper, Radio, RadioGroup, TextField, Typography } from "@mui/material"
+import AddCommentOutlinedIcon from '@mui/icons-material/AddCommentOutlined';
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import type { messageType } from "../types/messageType";
 import { useContext, useState } from "react";
 import type { RequestDetails } from "../types/RequestDetails";
@@ -10,9 +12,9 @@ type Props = {
     data: RequestDetails | undefined;
 };
 const messageStyles = {
-    teacher:   { bg: '#ffffff', border: '1px solid #e3e7ed',  accent: '#5f6b7a', align: 'flex-start' },
-    toTeacher: { bg: '#e8f6f8', border: '1px solid #c5e7ec',  accent: '#00838f', align: 'flex-end' },
-    internal:  { bg: '#fff8e6', border: '1px dashed #f0c674', accent: '#a86b00', align: 'flex-end' },
+    teacher: { bg: '#ffffff', border: '1px solid #e3e7ed', accent: '#5f6b7a', align: 'flex-start' },
+    toTeacher: { bg: '#e8f6f8', border: '1px solid #c5e7ec', accent: '#00838f', align: 'flex-end' },
+    internal: { bg: '#fff8e6', border: '1px dashed #f0c674', accent: '#a86b00', align: 'flex-end' },
 };
 const MessagesInRequest = ({ data }: Props) => {
 
@@ -20,13 +22,13 @@ const MessagesInRequest = ({ data }: Props) => {
     const [text, setText] = useState("");
     const [messageType, setMessageType] = useState<"Public" | "Internal">("Public")
     const { mutate: addPublicMessage, isError, isPending, error } = UseAddMessageTeacher();
-    const { mutate: addInternalMessage, isPending: internalPending } = UseAddMessageRespon();
+    const { mutate: addInternalMessage, isPending: internalPending, isError: isErrorAddMessage, error: errorAddMessag } = UseAddMessageRespon();
     const context = useContext(UserContext);
     if (!context)
         throw new Error("UserContext לא נמצא");
 
     const { user } = context
-       return (
+    return (
         <>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, maxWidth: 720, mb: 3 }}>
                 {data?.messages?.map((mess: messageType) => {
@@ -34,8 +36,8 @@ const MessagesInRequest = ({ data }: Props) => {
 
                     const kind =
                         mess.visibility === "Internal" ? 'internal'
-                        : mess.authorRole === "Teacher" ? 'teacher'
-                        : 'toTeacher';
+                            : mess.authorRole === "Teacher" ? 'teacher'
+                                : 'toTeacher';
                     const st = messageStyles[kind];
                     const isStart = st.align === 'flex-start';
 
@@ -82,17 +84,48 @@ const MessagesInRequest = ({ data }: Props) => {
                 })}
             </Box>
 
-            <Button onClick={() => setShowMessage(true)}>הוספת הודעה</Button>
+            <Button
+                onClick={() => setShowMessage(true)}
+                variant="outlined"
+                startIcon={<AddCommentOutlinedIcon />}
+                sx={{
+                    borderRadius: 2.5,
+                    fontWeight: 700,
+                    px: 2.5,
+                    color: "#9b4dbf",
+                    borderColor: "#e2c4f2",
+                    bgcolor: "#ffffff",
+                    "& .MuiButton-startIcon": { marginInlineStart: 0, marginInlineEnd: 0.75 },
+                    "&:hover": { borderColor: "#d77cf5", bgcolor: "#fbf4fe" },
+                }}
+            >
+                הוספת הודעה
+            </Button>
 
-            {showMessage && (<>
+            {showMessage && (<Paper
+                variant="outlined"
+                sx={{
+                    mt: 2,
+                    p: 2.5,
+                    maxWidth: 720,
+                    borderRadius: 3,
+                    borderColor: "#e3e7ed",
+                    bgcolor: "#ffffff",
+                    boxShadow: "0 4px 18px rgba(31, 35, 64, 0.06)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1.5,
+                }}
+            >
                 <TextField
-                    label="תיאור הפנייה"
+                    label="תוכן ההודעה"
                     multiline
                     minRows={3}
                     maxRows={8}
                     fullWidth
                     value={text}
                     onChange={(e) => setText(e.target.value)}
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2.5 } }}
                 />
 
                 {user?.role === "Responsible" && (
@@ -100,13 +133,28 @@ const MessagesInRequest = ({ data }: Props) => {
                         row
                         value={messageType}
                         onChange={(e) => setMessageType(e.target.value as "Public" | "Internal")}
+                        sx={{ "& .MuiRadio-root.Mui-checked": { color: "#9b4dbf" } }}
                     >
                         <FormControlLabel value="Public" control={<Radio />} label="הודעה למורה" />
                         <FormControlLabel value="Internal" control={<Radio />} label="הודעה פנימית" />
                     </RadioGroup>
                 )}
 
-                <Button disabled={!text.trim() || isPending || internalPending} onClick={() =>
+                <Button
+                    variant="contained"
+                    endIcon={(isPending || internalPending) ? <CircularProgress size={18} sx={{ color: "#fff" }} /> : <SendRoundedIcon sx={{ transform: "scaleX(-1)" }} />}
+                    sx={{
+                        alignSelf: "flex-end",
+                        borderRadius: 2.5,
+                        fontWeight: 700,
+                        px: 3,
+                        boxShadow: "none",
+                        background: "linear-gradient(to left, #4dd0e1, #ba68c8)",
+                        "& .MuiButton-endIcon": { marginInlineEnd: 0, marginInlineStart: 1 },
+                        "&:hover": { boxShadow: "0 4px 14px rgba(186,104,200,0.35)" },
+                        "&.Mui-disabled": { color: "#fff", opacity: 0.6 },
+                    }}
+                    disabled={!text.trim() || isPending || internalPending} onClick={() =>
                     messageType == "Public" ? addPublicMessage(text, {
                         onSuccess: () => {
                             setShowMessage(false)
@@ -122,10 +170,11 @@ const MessagesInRequest = ({ data }: Props) => {
                     })
                 } >שליחה
                 </Button>
-            </>
+            </Paper>
             )}
-            {isError && <p>{error.message}</p>}
-            {isPending && <p>מפעיל...</p>}
+            {isError && <Alert severity="error" sx={{ mt: 1.5, maxWidth: 720 }}>{error.message}</Alert>}
+            {isErrorAddMessage && <Alert severity="error" sx={{ mt: 1.5, maxWidth: 720 }}>{errorAddMessag.message}</Alert>}
+
         </>
     )
 }

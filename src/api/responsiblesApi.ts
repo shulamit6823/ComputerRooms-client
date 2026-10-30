@@ -1,4 +1,5 @@
 import type { Responsible } from "../types/Responsible";
+import { getErrorMessage } from "./getErrorMessage";
 
 const getResponsibles= async():Promise<Responsible[]>=>{
     const token=localStorage.getItem("token");
@@ -9,7 +10,7 @@ const getResponsibles= async():Promise<Responsible[]>=>{
         }
     })
     if(!response.ok)
-        throw new Error("failed !!")
+        throw new Error(await getErrorMessage(response, "אירעה שגיאה בטעינת האחראיות"))
     else{
     return response.json();
 

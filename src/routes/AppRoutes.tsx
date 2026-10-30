@@ -3,10 +3,11 @@ import RegisterPage from "../pages/RegisterPage"
 import LoginPage from "../pages/LoginPage";
 import App from "../App";
 import ManagerPage from "../pages/ManagerPage";
-import ResponsibleRequests from "../pages/responsibleRequestsPage";
+import RequestsPage from "../pages/RequestsPage";
 import ChangePassword from "../pages/ChangePassword";
-import ResponsibleRequestDetails from "../pages/responsibleRequestDetailsPage";
-import { NewRequest } from "../components/newRequest";
+import RequestDetailsPage from "../pages/RequestDetailsPage";
+import { NewRequest } from "../components/NewRequest";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 const routes = createBrowserRouter([
     {
@@ -27,10 +28,11 @@ const routes = createBrowserRouter([
             },
             {
                 path: "teacher",
+                element: <ProtectedRoute allowedRoles={["Teacher"]} />,
                 children: [
                     {
                         path: "requests",
-                        element: <ResponsibleRequests />
+                        element: <RequestsPage />
                     },
                     {
                         path: "requests/create",
@@ -39,28 +41,37 @@ const routes = createBrowserRouter([
 
                     {
                         path: "requests/:id",
-                        element: <ResponsibleRequestDetails />
+                        element: <RequestDetailsPage />
                     }
                 ]
             },
             {
                 path: "responsible",
+                element: <ProtectedRoute allowedRoles={["Responsible"]} />,
                 children: [
                     {
                         path: "requests",
-                        element: <ResponsibleRequests />
+                        element: <RequestsPage />
                     },
                     {
                         path: "requests/:id",
-                        element: <ResponsibleRequestDetails />
+                        element: <RequestDetailsPage />
                     }
                 ]
 
             },
             {
+
                 path: "manager",
-                element: <ManagerPage></ManagerPage>
+                element: <ProtectedRoute allowedRoles={["Manager"]} />,
+                children: [
+                    {
+                        index: true,
+                        element: <ManagerPage />
+                    }
+                ]
             },
+
             {
                 path: "change-password",
                 element: <ChangePassword />
